@@ -256,3 +256,85 @@ PowerBI will produce you this as the table dataview. Do not assume there is an o
 
 The data can be aggregated by selecting the desired field and clicking sum.  
 ![](images/DataAggregation.png)
+
+## Data Reduction
+
+To influence the number of data items available in the different dataview it is possible to add a `dataReductionAlgorithm` property to the data mapping definition. 
+
+The `dataReductionAlgorithm` can be used with all the different data mappings (categorical or table) as part of the definition, see the following code snippets for the correct position
+
+*Categorical definition*
+```json
+"dataViewMappings": {
+    "categorical": {
+        "categories": {
+            "for": { "in": "category" }
+        },
+        "values": {
+            "select": [
+                { "bind": { "to": "measure" } }
+            ],
+            "dataReductionAlgorithm": ...
+        }
+    }
+}
+```
+
+*Table definition*
+```json
+"dataViewMappings": [
+    {
+        "table": {
+            "rows": {
+                "for": {
+                    "in": "values"
+                }
+            },
+            "dataReductionAlgorithm": ...
+        }
+    }
+]
+```
+
+### Syntax
+
+The syntax of the `dataReductionAlgorithm` property
+
+```json
+"dataReductionAlgorithm" : {
+     "<algorithm>" : {
+          "count": "<count>"
+     }
+}
+```
+
+The *`algorithm`* values:
+- **top** - Reduce the data to the Top count items
+- **bottom** - Reduce the data to the Bottom count items
+- **sample** - Reduce the data using a simple Sample of count items
+- **window** - Allow the data to be loaded one window, containing count items, at a time
+
+The *`count`* value is the approximate maximum items available for the visual.
+
+If no `dataReductionAlgorithm` is provided, a *top 1000* is used as reduction algorithm.
+
+**Example1**
+In this example we reduce the data view to use the bottom +/- 4,000 items as maximum:
+
+```json
+"dataReductionAlgorithm": {
+     "bottom": {
+          "count": 4000
+     }
+}
+```
+**Example2**
+In this example we reduce the data view to use the top +/- 30,000 items as maximum:
+
+```json
+"dataReductionAlgorithm": {
+     "top": {
+          "count": 30000
+     }
+}
+```
